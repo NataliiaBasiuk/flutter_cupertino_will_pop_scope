@@ -19,7 +19,7 @@ const double _kMinFlingVelocity = 1.0; // Screen widths per second.
 // An eyeballed value for the maximum time it takes for a page to animate forward
 // if the user releases a page mid swipe.
 const int _kMaxDroppedSwipePageForwardAnimationTime = 800; // Milliseconds.
-
+final double _kMaxSwipeDistance = 0.42;
 // The maximum time for a page to get reset to it's original position if the
 // user releases a page mid swipe.
 const int _kMaxPageBackAnimationTime = 300; // Milliseconds.
@@ -662,7 +662,11 @@ class _CupertinoBackGestureDetectorState<T> extends State<_CupertinoBackGestureD
 
   void _handleDragUpdate(DragUpdateDetails details) {
     assert(mounted);
-    assert(_backGestureController != null);
+    // assert(_backGestureController != null);
+    if (_willPopCallback != null && details.globalPosition.dx > context.size!.width * _kMaxSwipeDistance) {
+      _willPopCallback!();
+      // _handleDragCancel();
+    }
     _backGestureController!.dragUpdate(_convertToLogical(details.primaryDelta! / context.size!.width));
   }
 
