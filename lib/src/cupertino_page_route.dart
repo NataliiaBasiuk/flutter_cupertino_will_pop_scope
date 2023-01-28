@@ -637,6 +637,8 @@ class _CupertinoBackGestureDetectorState<T> extends State<_CupertinoBackGestureD
 
   Future<RoutePopDisposition> Function()? _willPopCallback;
 
+  bool? isEndingGesture = true;
+
   @override
   void initState() {
     super.initState();
@@ -664,19 +666,27 @@ class _CupertinoBackGestureDetectorState<T> extends State<_CupertinoBackGestureD
     assert(mounted);
     // assert(_backGestureController != null);
     if (_willPopCallback != null && details.globalPosition.dx > context.size!.width * _kMaxSwipeDistance) {
+      setState(() {
+        isEndingGesture = false;
+      });
       final shouldPop = await _willPopCallback!();
-      if (shouldPop == RoutePopDisposition.doNotPop) _handleDragCancel();
+      if (shouldPop == RoutePopDisposition.doNotPop) {
+        _handleDragCancel();
+      }
+    } else {
+      _backGestureController!.dragUpdate(_convertToLogical(details.primaryDelta! / context.size!.width));
     }
-    _backGestureController!.dragUpdate(_convertToLogical(details.primaryDelta! / context.size!.width));
   }
 
   void _handleDragEnd(DragEndDetails details) {
     assert(mounted);
     // assert(_backGestureController != null);
-    _backGestureController?.dragEnd(_convertToLogical(details.velocity.pixelsPerSecond.dx / context.size!.width));
+    if (isEndingGesture!) {
+      _backGestureController?.dragEnd(_convertToLogical(details.velocity.pixelsPerSecond.dx / context.size!.width));
 
-    _backGestureController = null;
-    _willPopCallback = null;
+      _backGestureController = null;
+      _willPopCallback = null;
+    }
   }
 
   void _handleDragCancel() {
@@ -685,6 +695,9 @@ class _CupertinoBackGestureDetectorState<T> extends State<_CupertinoBackGestureD
     // that we don't consider here.
     _backGestureController?.dragEnd(0.0);
     _backGestureController = null;
+    setState(() {
+      isEndingGesture = true;
+    });
   }
 
   void _handlePointerDown(PointerDownEvent event) {
