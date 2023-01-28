@@ -665,7 +665,7 @@ class _CupertinoBackGestureDetectorState<T> extends State<_CupertinoBackGestureD
     // assert(_backGestureController != null);
     if (_willPopCallback != null && details.globalPosition.dx > context.size!.width * _kMaxSwipeDistance) {
       _willPopCallback!();
-      // _handleDragCancel();
+      _handleDragCancel();
     }
     _backGestureController!.dragUpdate(_convertToLogical(details.primaryDelta! / context.size!.width));
   }
