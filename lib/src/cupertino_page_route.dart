@@ -660,12 +660,12 @@ class _CupertinoBackGestureDetectorState<T> extends State<_CupertinoBackGestureD
     _backGestureController = widget.onStartPopGesture();
   }
 
-  void _handleDragUpdate(DragUpdateDetails details) {
+  void _handleDragUpdate(DragUpdateDetails details) async {
     assert(mounted);
     // assert(_backGestureController != null);
     if (_willPopCallback != null && details.globalPosition.dx > context.size!.width * _kMaxSwipeDistance) {
-      _willPopCallback!();
-      _handleDragCancel();
+      final shouldPop = await _willPopCallback!();
+      if (shouldPop == RoutePopDisposition.doNotPop) _handleDragCancel();
     }
     _backGestureController!.dragUpdate(_convertToLogical(details.primaryDelta! / context.size!.width));
   }
