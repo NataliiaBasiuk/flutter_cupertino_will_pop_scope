@@ -672,6 +672,10 @@ class _CupertinoBackGestureDetectorState<T> extends State<_CupertinoBackGestureD
       final shouldPop = await _willPopCallback!();
       if (shouldPop == RoutePopDisposition.doNotPop) {
         _handleDragCancel();
+      } else {
+        setState(() {
+          isEndingGesture = true;
+        });
       }
     } else {
       _backGestureController!.dragUpdate(_convertToLogical(details.primaryDelta! / context.size!.width));
